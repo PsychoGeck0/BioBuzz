@@ -7,6 +7,7 @@ import com.pedropathing.revhub.drivetrains.Mecanum;
 import com.pedropathing.revhub.drivetrains.MecanumConfig;
 import com.pedropathing.revhub.localizers.PinpointConfig;
 import com.pedropathing.revhub.localizers.PinpointLocalizer;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -14,10 +15,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class Constants {
     // Starter names/directions: replace with the Mecanum AutoTune output.
     public static MecanumConfig drivetrainConfig = new MecanumConfig(c -> {
-        c.frontLeftName.set("left_front");
-        c.backLeftName.set("left_back");
-        c.frontRightName.set("right_front");
-        c.backRightName.set("right_back");
+        c.frontLeftName.set("FrontLeftMotor");
+        c.backLeftName.set("BackLeftMotor");
+        c.frontRightName.set("FrontRightMotor");
+        c.backRightName.set("BackRightMotor");
         c.frontLeftDirection.set(DcMotorSimple.Direction.REVERSE);
         c.backLeftDirection.set(DcMotorSimple.Direction.REVERSE);
         c.frontRightDirection.set(DcMotorSimple.Direction.FORWARD);

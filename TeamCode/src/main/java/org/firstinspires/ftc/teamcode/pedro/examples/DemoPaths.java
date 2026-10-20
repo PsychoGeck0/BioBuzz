@@ -3,12 +3,14 @@ package org.firstinspires.ftc.teamcode.pedro.examples;
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 import static com.pedropathing.api.Paths.curve;
 import static com.pedropathing.api.Paths.line;
 import static com.pedropathing.api.Paths.path;
-
+@Disabled
 /** Small demonstration route, not a BIOBUZZ competition autonomous. */
 public final class DemoPaths {
     public final Pose start;

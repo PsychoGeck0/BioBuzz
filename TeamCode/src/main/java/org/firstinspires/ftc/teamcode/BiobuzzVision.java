@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -57,6 +58,7 @@ import java.util.concurrent.TimeUnit;
  *  - Tag neutral positions are intentionally NOT guessed. Calibrate them or paste values
  *    measured from official CAD using setTagNeutralPosition().
  */
+@Disabled
 public final class BiobuzzVision implements AutoCloseable {
 
     public static final double TAG_SIZE_IN = 3.25;
