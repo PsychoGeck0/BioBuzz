@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Auto;
+package org.firstinspires.ftc.teamcode.Auto.AutoPaths;
 
 import static com.pedropathing.api.Paths.*;
 
@@ -23,7 +23,7 @@ public class Blue extends LinearOpMode {
 
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
-    private final Pose start = poseFactory.of(72.7758, 132.9674, 90);
+    public final Pose start = poseFactory.of(72.7758, 132.9674, 90);
     private final Pose path1 = poseFactory.of(82.5009, 130.5765, 90);
     private final Pose point2 = poseFactory.of(82.3213, 117.7225, 89.1997);
     private final Pose point3Start = poseFactory.of(82.3213, 117.7225, 90);
