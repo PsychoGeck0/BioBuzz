@@ -24,8 +24,7 @@ public class StarterBotTeleOp extends OpMode
     private DcMotorEx outtake = null;
     private DcMotor intake = null;
 
-    private CRServo leftIntakeServo = null;
-    private CRServo rightIntakeServo = null;
+
     private CRServo windmillServo = null;
 
     // =========================
@@ -64,8 +63,7 @@ public class StarterBotTeleOp extends OpMode
 
         // Servos
         windmillServo = hardwareMap.get(CRServo.class, "windmillServo");
-        leftIntakeServo = hardwareMap.get(CRServo.class, "left_intake_servo");
-        rightIntakeServo = hardwareMap.get(CRServo.class, "right_intake_servo");
+
 
         // Drive directions
         frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
@@ -88,11 +86,10 @@ public class StarterBotTeleOp extends OpMode
         );
 
         // Initialize servos
-        leftIntakeServo.setPower(0);
-        rightIntakeServo.setPower(0);
+
         windmillServo.setPower(0);
 
-        rightIntakeServo.setDirection(DcMotorSimple.Direction.REVERSE);
+
         windmillServo.setDirection(DcMotorSimple.Direction.REVERSE);
 
         telemetry.addData("Status", "Initialized");
@@ -130,8 +127,7 @@ public class StarterBotTeleOp extends OpMode
 
         // Apply intake power
         intake.setPower(intakePower);
-        leftIntakeServo.setPower(intakePower);
-        rightIntakeServo.setPower(intakePower);
+
 
         // Telemetry
         telemetry.addData(
