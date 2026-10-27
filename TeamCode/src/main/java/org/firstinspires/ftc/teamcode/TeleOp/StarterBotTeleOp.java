@@ -87,10 +87,7 @@ public class StarterBotTeleOp extends OpMode
 
         // Initialize servos
 
-        windmillServo.setPower(0);
 
-
-        windmillServo.setDirection(DcMotorSimple.Direction.REVERSE);
 
         telemetry.addData("Status", "Initialized");
     }
