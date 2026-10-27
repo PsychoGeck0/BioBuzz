@@ -1,12 +1,11 @@
 package org.firstinspires.ftc.teamcode.RunPaths;
 
+import static com.pedropathing.api.Paths.curve;
 import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.instant;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
-import static com.pedropathing.ivy.pedro.PedroCommands.*;
-import static com.pedropathing.ivy.commands.Commands.*;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
@@ -75,22 +74,41 @@ public class RunBlue extends OpMode {
         return sequential(
 
                 follow(follower, paths.path1()),
-                Wait(500),
+
 
                 follow(follower, paths.path2()),
+                instant(()-> outtake.setVelocity(1250)),
+                Wait(1000),
+                //add transfer when built
+                instant(()-> outtake.setPower(0)),
+                instant(()-> intake.setPower(1)),
 
-                Wait(500),
                 follow(follower, paths.path3()),
                 Wait(1000),
+                instant(()-> intake.setPower(0)),
+
                 follow(follower, paths.path4()),
+
                 follow(follower, paths.path5()),
                 Wait(1000),
+
                 follow(follower, paths.path6()),
-                Wait(500),
+                instant(()-> outtake.setVelocity(1250)),
+                Wait(1000),
+                //add transfer when built
                 follow(follower, paths.path7()),
+//add lowering flower thingy
+                instant(()-> intake.setPower(1)),
+                Wait(500),
                 follow(follower, paths.path8()),
+                Wait(1000),
+                instant(()-> intake.setPower(0)),
                 follow(follower, paths.path9()),
+                instant(()-> outtake.setVelocity(1250)),
+                Wait(1000),
+                //add transfer when built
                 follow(follower, paths.path10())
+                //park
         );
     }
 
@@ -100,8 +118,9 @@ public class RunBlue extends OpMode {
         follower = Constants.create(hardwareMap);
         follower.setPose(paths.start);
         follower.update();
-        telemetry.addLine("BlueBB ready");
+        telemetry.addLine("Blue ready");
         telemetry.update();
+        initDrivetrain(hardwareMap);
     }
 
     @Override
@@ -154,6 +173,8 @@ public class RunBlue extends OpMode {
                 DcMotor.RunMode.RUN_USING_ENCODER,
                 new PIDFCoefficients(40, 0, 0, 12.5)
         );
+
+
 
 
 

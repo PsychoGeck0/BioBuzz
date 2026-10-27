@@ -23,7 +23,7 @@ public class Red extends LinearOpMode {
 
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
-    private final Pose start = poseFactory.of(81.5284, 8.7294, 90);
+    public final Pose start = poseFactory.of(81.5284, 8.7294, 90);
     private final Pose point1Start = poseFactory.of(81.5284, 8.7294, -90);
     private final Pose point1 = poseFactory.of(59.4038, 24.3196, -90);
     private final Pose path1 = poseFactory.of(10.2113, 18.9518, -90);
