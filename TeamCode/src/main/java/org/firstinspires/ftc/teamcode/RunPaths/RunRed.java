@@ -100,6 +100,8 @@ public class RunRed extends OpMode {
                 instant(()-> outtake.setVelocity(1500)),
                 Wait(1000),
                 //transfer
+                Wait(500),
+                instant(()-> outtake.setVelocity(0)),
                 follow(follower, paths.path8())
 
 

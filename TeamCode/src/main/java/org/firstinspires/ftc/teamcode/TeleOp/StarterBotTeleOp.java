@@ -3,6 +3,9 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -10,6 +13,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.pedropathing.drivetrain.DrivePowers;
+import com.pedropathing.follower.ManualDrive;
 
 @TeleOp(name = "StarterBotTeleOp")
 
@@ -24,15 +29,19 @@ public class StarterBotTeleOp extends OpMode
     private DcMotorEx outtake = null;
     private DcMotor intake = null;
 
-
+    private CRServo leftIntakeServo = null;
+    private CRServo rightIntakeServo = null;
     private CRServo windmillServo = null;
+
+    private boolean windmillOn = false;
+    private boolean previousX = false;
 
     // =========================
     // Launcher Settings
     // =========================
 
-    public final int LAUNCHER_TARGET_VELOCITY = 1500;
-    public final int LAUNCHER_MIN_VELOCITY = 1450;
+    public final int LAUNCHER_TARGET_VELOCITY = 1250;
+    public final int LAUNCHER_MIN_VELOCITY = 1200;
 
     // =========================
     // Motor Power Variables
@@ -44,6 +53,8 @@ public class StarterBotTeleOp extends OpMode
     private double rightBackPower;
     private double intakePower;
 
+
+
     // =========================
     // Initialization
     // =========================
@@ -52,10 +63,10 @@ public class StarterBotTeleOp extends OpMode
     public void init() {
 
         // Drive motors
-        frontLeftMotor = hardwareMap.get(DcMotor.class, "FrontLeftMotor");
-        frontRightMotor = hardwareMap.get(DcMotor.class, "FrontRightMotor");
-        backLeftMotor = hardwareMap.get(DcMotor.class, "BackLeftMotor");
-        backRightMotor = hardwareMap.get(DcMotor.class, "BackRightMotor");
+        frontLeftMotor = hardwareMap.get(DcMotor.class, "frontLeftMotor");
+        frontRightMotor = hardwareMap.get(DcMotor.class, "frontRightMotor");
+        backLeftMotor = hardwareMap.get(DcMotor.class, "backLeftMotor");
+        backRightMotor = hardwareMap.get(DcMotor.class, "backRightMotor");
 
         // Other motors
         intake = hardwareMap.get(DcMotor.class, "intake");
@@ -63,7 +74,8 @@ public class StarterBotTeleOp extends OpMode
 
         // Servos
         windmillServo = hardwareMap.get(CRServo.class, "windmillServo");
-
+        leftIntakeServo = hardwareMap.get(CRServo.class, "left_intake_servo");
+        rightIntakeServo = hardwareMap.get(CRServo.class, "right_intake_servo");
 
         // Drive directions
         frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
@@ -86,8 +98,12 @@ public class StarterBotTeleOp extends OpMode
         );
 
         // Initialize servos
+        leftIntakeServo.setPower(0);
+        rightIntakeServo.setPower(0);
+        windmillServo.setPower(0);
 
-
+        rightIntakeServo.setDirection(DcMotorSimple.Direction.REVERSE);
+        windmillServo.setDirection(DcMotorSimple.Direction.REVERSE);
 
         telemetry.addData("Status", "Initialized");
     }
@@ -117,14 +133,15 @@ public class StarterBotTeleOp extends OpMode
         );
 
         // Intake controls
-        intakePower = gamepad1.right_trigger - gamepad1.left_trigger;
+        intakePower = gamepad2.right_trigger - gamepad2.left_trigger;
 
         // Launcher and windmill
         launch();
 
         // Apply intake power
         intake.setPower(intakePower);
-
+        leftIntakeServo.setPower(intakePower);
+        rightIntakeServo.setPower(intakePower);
 
         // Telemetry
         telemetry.addData(
@@ -185,24 +202,24 @@ public class StarterBotTeleOp extends OpMode
     void launch() {
 
         // Spin up launcher while holding right bumper
-        if (gamepad2.right_trigger_pressed) {
+        if (gamepad1.right_bumper) {
             outtake.setVelocity(LAUNCHER_TARGET_VELOCITY);
-        } else
-        {
+        } else {
             outtake.setVelocity(0);
         }
 
         // Feed only when launcher reaches minimum velocity
-        if (gamepad2.left_bumper
-                && outtake.getVelocity() > LAUNCHER_MIN_VELOCITY) {
 
-            windmillServo.setPower(-1);
-            intakePower += 0.5;
+        if (gamepad1.right_bumper) {
+            windmillOn = !windmillOn;
+        }
 
-        } else {
-            windmillServo.setPower(0);
+        previousX = gamepad1.right_bumper;
+
+        if (windmillOn )
+        {
+            windmillServo.setPower(1.0);
         }
     }
 }
-
 
