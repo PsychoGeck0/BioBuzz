@@ -27,6 +27,7 @@ public class FieldCentricDrive extends LinearOpMode {
         DcMotor backRightMotor = hardwareMap.dcMotor.get("Back_Right_Motor");
         DcMotor intake = hardwareMap.dcMotor.get("intake");
       DcMotor outtake = hardwareMap.dcMotor.get( "launcher");
+      CrServo transfer = hardwareMap.CrServo.get("transfer")
         outtake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
@@ -41,6 +42,7 @@ public class FieldCentricDrive extends LinearOpMode {
         backRightMotor.setZeroPowerBehavior(BRAKE);
         intake.setZeroPowerBehavior(BRAKE);
         outtake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        
 
 
 
@@ -63,6 +65,7 @@ public class FieldCentricDrive extends LinearOpMode {
             double x = gamepad1.left_stick_x;
             double rx = gamepad1.right_stick_x;
             boolean aPressed = gamepad1.a;
+            boolean bPressed = gamepad1.b;
 
 
 
@@ -76,6 +79,8 @@ public class FieldCentricDrive extends LinearOpMode {
             } else {
                 outtake.setPower(0);
             }
+            
+
             // This button choice was made so that it is hard to hit on accident,
             // it can be freely changed based on preference.
             // The equivalent button is start on Xbox-style controllers.
