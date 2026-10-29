@@ -27,7 +27,7 @@ public class FieldCentricDrive extends LinearOpMode {
         DcMotor backRightMotor = hardwareMap.dcMotor.get("Back_Right_Motor");
         DcMotor intake = hardwareMap.dcMotor.get("intake");
       DcMotor outtake = hardwareMap.dcMotor.get( "launcher");
-      CrServo transfer = hardwareMap.CrServo.get("transfer")
+      DcMotor transfer = hardwareMap.dcMotor.get("transfer")
         outtake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
@@ -42,7 +42,7 @@ public class FieldCentricDrive extends LinearOpMode {
         backRightMotor.setZeroPowerBehavior(BRAKE);
         intake.setZeroPowerBehavior(BRAKE);
         outtake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        
+        transfer.setZeroPowerBehavior(BRAKE);
 
 
 
@@ -78,6 +78,12 @@ public class FieldCentricDrive extends LinearOpMode {
                 outtake.setPower(0.25);
             } else {
                 outtake.setPower(0);
+            }
+            if (bPressed) {
+            transfer.setPower(1);
+            }
+              else {
+              transfer.setPower(0);
             }
             
 
