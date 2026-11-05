@@ -23,6 +23,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
@@ -44,12 +45,10 @@ public class RunBlue extends OpMode {
     private Follower follower;
     private final Blue paths = new Blue();
    private final DriveTrain2 driveTrain = new DriveTrain2();
-    private DcMotor frontLeftMotor = null;
-    private DcMotor backLeftMotor = null;
-    private DcMotor frontRightMotor = null;
-    private DcMotor backRightMotor = null;
+
     private DcMotorEx outtake = null;
     private DcMotor intake = null;
+    private DcMotor transfer = null;
     private double leftFrontPower;
     private double rightFrontPower;
     private double leftBackPower;
@@ -72,21 +71,27 @@ public class RunBlue extends OpMode {
     // Same wait pattern as Redbb. Add, remove or change Wait(...) lines as needed.
     private Command autoRoutine() {
         return sequential(
+                instant(()-> outtake.setVelocity(1250)),
+                Wait(500),
+                instant(()-> transfer.setPower(1)),
+                Wait(500),
 
                 follow(follower, paths.path1()),
+                instant(()-> intake.setPower(1)),
+
 
 
                 follow(follower, paths.path2()),
-                instant(()-> outtake.setVelocity(1250)),
-                Wait(1000),
-                //add transfer when built
-                instant(()-> outtake.setPower(0)),
-                instant(()-> intake.setPower(1)),
-
-                follow(follower, paths.path3()),
-                Wait(1000),
+                Wait(500),
                 instant(()-> intake.setPower(0)),
 
+
+                follow(follower, paths.path3()),
+                instant(()-> outtake.setVelocity(1250)),
+                Wait(500),
+                instant(()-> transfer.setPower(1)),
+                Wait(500),
+//add lower hood
                 follow(follower, paths.path4()),
 
                 follow(follower, paths.path5()),
@@ -94,21 +99,9 @@ public class RunBlue extends OpMode {
 
                 follow(follower, paths.path6()),
                 instant(()-> outtake.setVelocity(1250)),
-                Wait(1000),
+                Wait(1000)
                 //add transfer when built
-                follow(follower, paths.path7()),
-//add lowering flower thingy
-                instant(()-> intake.setPower(1)),
-                Wait(500),
-                follow(follower, paths.path8()),
-                Wait(1000),
-                instant(()-> intake.setPower(0)),
-                follow(follower, paths.path9()),
-                instant(()-> outtake.setVelocity(1250)),
-                Wait(1000),
-                //add transfer when built
-                follow(follower, paths.path10())
-                //park
+
         );
     }
 
@@ -142,30 +135,24 @@ public class RunBlue extends OpMode {
     public void initDrivetrain(HardwareMap hwMap){
 
         // Drive motors
-        frontLeftMotor = hardwareMap.get(DcMotor.class, "FrontLeftMotor");
-        frontRightMotor =hardwareMap.get(DcMotor.class, "FrontRightMotor");
-        backLeftMotor = hardwareMap.get(DcMotor.class, "BackLeftMotor");
-        backRightMotor = hardwareMap.get(DcMotor.class, "BackRightMotor");
+
 
         // Other motors
         intake = hardwareMap.get(DcMotor.class, "intake");
         outtake = hardwareMap.get(DcMotorEx.class, "launcher");
+        transfer = hardwareMap.get(DcMotorEx.class, "transfer");
 
 
 
 
         // Drive directions
-        frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
-        frontRightMotor.setDirection(DcMotor.Direction.FORWARD);
-        backLeftMotor.setDirection(DcMotor.Direction.REVERSE);
-        backRightMotor.setDirection(DcMotor.Direction.FORWARD);
+
+        transfer.setDirection(DcMotor.Direction.REVERSE);
 
         // Brake behavior
-        frontLeftMotor.setZeroPowerBehavior(BRAKE);
-        frontRightMotor.setZeroPowerBehavior(BRAKE);
-        backLeftMotor.setZeroPowerBehavior(BRAKE);
-        backRightMotor.setZeroPowerBehavior(BRAKE);
+
         intake.setZeroPowerBehavior(BRAKE);
+        transfer.setZeroPowerBehavior(BRAKE);
 
         // Launcher configuration
         outtake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

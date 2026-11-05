@@ -13,35 +13,32 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-import com.pedropathing.drivetrain.DrivePowers;
-import com.pedropathing.follower.ManualDrive;
+
 
 @TeleOp(name = "StarterBotTeleOp")
 
 public class StarterBotTeleOp extends OpMode
 {
 
-    private DcMotor frontLeftMotor = null;
-    private DcMotor backLeftMotor = null;
-    private DcMotor frontRightMotor = null;
-    private DcMotor backRightMotor = null;
+    private DcMotor FrontLeftMotor = null;
+    private DcMotor BackLeftMotor = null;
+    private DcMotor FrontRightMotor = null;
+    private DcMotor BackRightMotor = null;
 
     private DcMotorEx outtake = null;
     private DcMotor intake = null;
 
-    private CRServo leftIntakeServo = null;
-    private CRServo rightIntakeServo = null;
-    private CRServo windmillServo = null;
+    private DcMotor transfer = null;
+    private CRServo angler = null;
 
-    private boolean windmillOn = false;
-    private boolean previousX = false;
+
 
     // =========================
     // Launcher Settings
     // =========================
 
-    public final int LAUNCHER_TARGET_VELOCITY = 1250;
-    public final int LAUNCHER_MIN_VELOCITY = 1200;
+    public final int LAUNCHER_POLLEN_VELOCITY = 1250;
+    public final int LAUNCHER_NECTAR_VELOCITY = 1900;
 
     // =========================
     // Motor Power Variables
@@ -53,6 +50,12 @@ public class StarterBotTeleOp extends OpMode
     private double rightBackPower;
     private double intakePower;
 
+    private double transferPower;
+    double currentAngle = 0;
+    double step = 10;
+    double degreesPerPower = 360.0;
+    double descent = 10;
+
 
 
     // =========================
@@ -63,32 +66,41 @@ public class StarterBotTeleOp extends OpMode
     public void init() {
 
         // Drive motors
-        frontLeftMotor = hardwareMap.get(DcMotor.class, "frontLeftMotor");
-        frontRightMotor = hardwareMap.get(DcMotor.class, "frontRightMotor");
-        backLeftMotor = hardwareMap.get(DcMotor.class, "backLeftMotor");
-        backRightMotor = hardwareMap.get(DcMotor.class, "backRightMotor");
+        FrontLeftMotor = hardwareMap.get(DcMotor.class, "FrontLeftMotor");
+        FrontRightMotor = hardwareMap.get(DcMotor.class, "FrontRightMotor");
+        BackLeftMotor = hardwareMap.get(DcMotor.class, "BackLeftMotor");
+        BackRightMotor = hardwareMap.get(DcMotor.class, "BackRightMotor");
+        angler = hardwareMap.get(CRServo.class, "Angle");
+
 
         // Other motors
         intake = hardwareMap.get(DcMotor.class, "intake");
         outtake = hardwareMap.get(DcMotorEx.class, "launcher");
+        transfer = hardwareMap.get(DcMotorEx.class,"transfer");
 
         // Servos
-        windmillServo = hardwareMap.get(CRServo.class, "windmillServo");
-        leftIntakeServo = hardwareMap.get(CRServo.class, "left_intake_servo");
-        rightIntakeServo = hardwareMap.get(CRServo.class, "right_intake_servo");
 
         // Drive directions
-        frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
-        frontRightMotor.setDirection(DcMotor.Direction.FORWARD);
-        backLeftMotor.setDirection(DcMotor.Direction.REVERSE);
-        backRightMotor.setDirection(DcMotor.Direction.FORWARD);
-
+        FrontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
+        FrontRightMotor.setDirection(DcMotor.Direction.FORWARD);
+        BackLeftMotor.setDirection(DcMotor.Direction.REVERSE);
+        BackRightMotor.setDirection(DcMotor.Direction.FORWARD);
+        outtake.setDirection(DcMotorSimple.Direction.REVERSE);
         // Brake behavior
-        frontLeftMotor.setZeroPowerBehavior(BRAKE);
-        frontRightMotor.setZeroPowerBehavior(BRAKE);
-        backLeftMotor.setZeroPowerBehavior(BRAKE);
-        backRightMotor.setZeroPowerBehavior(BRAKE);
+
+        FrontLeftMotor.setZeroPowerBehavior(BRAKE);
+        FrontRightMotor.setZeroPowerBehavior(BRAKE);
+        BackLeftMotor.setZeroPowerBehavior(BRAKE);
+        BackRightMotor.setZeroPowerBehavior(BRAKE);
         intake.setZeroPowerBehavior(BRAKE);
+        transfer.setZeroPowerBehavior(BRAKE);
+
+        FrontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        BackLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        FrontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        BackRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
 
         // Launcher configuration
         outtake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -96,14 +108,9 @@ public class StarterBotTeleOp extends OpMode
                 DcMotor.RunMode.RUN_USING_ENCODER,
                 new PIDFCoefficients(40, 0, 0, 12.5)
         );
-
+angler.setPower(0);
         // Initialize servos
-        leftIntakeServo.setPower(0);
-        rightIntakeServo.setPower(0);
-        windmillServo.setPower(0);
 
-        rightIntakeServo.setDirection(DcMotorSimple.Direction.REVERSE);
-        windmillServo.setDirection(DcMotorSimple.Direction.REVERSE);
 
         telemetry.addData("Status", "Initialized");
     }
@@ -128,20 +135,42 @@ public class StarterBotTeleOp extends OpMode
         // Mecanum drive
         mecanumDrive(
                 -gamepad1.left_stick_y,
-                gamepad1.left_stick_x,
-                gamepad1.right_stick_x
+                gamepad1.right_stick_x,
+                gamepad1.left_stick_x
         );
 
         // Intake controls
         intakePower = gamepad2.right_trigger - gamepad2.left_trigger;
+
+
+        if (gamepad2.b) {
+            transfer.setPower(-1);
+        }
+
+        else
+        {
+            transfer.setPower(0);
+        }
+
+        currentAngle += step;
+        double power = currentAngle / degreesPerPower;
+        degreesPerPower = 0.36;
+        currentAngle -= descent;
+        double power2 = currentAngle/degreesPerPower;
+
+if (gamepad2.x){
+    angler.setPower(Math.max(-1.0, Math.min(1, power)));
+
+}
+if (gamepad2.b){
+    angler.setPower(Math.max(1.0, Math.min(1, power2)));
+}
 
         // Launcher and windmill
         launch();
 
         // Apply intake power
         intake.setPower(intakePower);
-        leftIntakeServo.setPower(intakePower);
-        rightIntakeServo.setPower(intakePower);
 
         // Telemetry
         telemetry.addData(
@@ -192,34 +221,39 @@ public class StarterBotTeleOp extends OpMode
         }
 
         // Send power to the drive motors
-        frontLeftMotor.setPower(leftFrontPower);
-        frontRightMotor.setPower(rightFrontPower);
-        backLeftMotor.setPower(leftBackPower);
-        backRightMotor.setPower(rightBackPower);
+        FrontLeftMotor.setPower(leftFrontPower);
+        FrontRightMotor.setPower(rightFrontPower);
+        BackLeftMotor.setPower(leftBackPower);
+        BackRightMotor.setPower(rightBackPower);
+
     }
 
 
     void launch() {
 
         // Spin up launcher while holding right bumper
-        if (gamepad1.right_bumper) {
-            outtake.setVelocity(LAUNCHER_TARGET_VELOCITY);
+        if (gamepad2.right_bumper)
+        {
+            outtake.setVelocity(LAUNCHER_POLLEN_VELOCITY);
+        } else {
+            outtake.setVelocity(0);
+        }
+
+        if (gamepad2.left_bumper)
+        {
+            outtake.setVelocity(LAUNCHER_NECTAR_VELOCITY);
         } else {
             outtake.setVelocity(0);
         }
 
         // Feed only when launcher reaches minimum velocity
 
-        if (gamepad1.right_bumper) {
-            windmillOn = !windmillOn;
-        }
 
-        previousX = gamepad1.right_bumper;
-
-        if (windmillOn )
-        {
-            windmillServo.setPower(1.0);
-        }
+        telemetry.addData(String.valueOf(leftFrontPower), "FrontLeftMotor");
+        telemetry.addData(String.valueOf(rightFrontPower), "FrontRightMotor");
+        telemetry.addData(String.valueOf(leftBackPower), "BackLeftMotor");
+        telemetry.addData(String.valueOf(rightBackPower), "BackRightMotor");
     }
+
 }
 

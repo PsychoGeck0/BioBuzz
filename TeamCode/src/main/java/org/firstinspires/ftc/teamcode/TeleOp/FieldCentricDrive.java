@@ -15,34 +15,39 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 @TeleOp
 public class FieldCentricDrive extends LinearOpMode {
-    private double intakePower;
-    @Override
 
     public void runOpMode() throws InterruptedException {
+
         // Declare our motors
         // Make sure your ID's match your configuration
-        DcMotor frontLeftMotor = hardwareMap.dcMotor.get("Front_Left_Motor");
-        DcMotor backLeftMotor = hardwareMap.dcMotor.get("Back_Left_Motor");
-        DcMotor frontRightMotor = hardwareMap.dcMotor.get("Front_Right_Motor");
-        DcMotor backRightMotor = hardwareMap.dcMotor.get("Back_Right_Motor");
+        DcMotor frontLeftMotor = hardwareMap.dcMotor.get("FrontLeftMotor");
+        DcMotor backLeftMotor = hardwareMap.dcMotor.get("BackLeftMotor");
+        DcMotor frontRightMotor = hardwareMap.dcMotor.get("FrontRightMotor");
+        DcMotor backRightMotor = hardwareMap.dcMotor.get("BackRightMotor");
         DcMotor intake = hardwareMap.dcMotor.get("intake");
-      DcMotor outtake = hardwareMap.dcMotor.get( "launcher");
-      DcMotor transfer = hardwareMap.dcMotor.get("transfer")
+      DcMotorEx outtake = (DcMotorEx) hardwareMap.dcMotor.get( "launcher");
+      DcMotorEx transfer = (DcMotorEx) hardwareMap.dcMotor.get("transfer");
         outtake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        transfer.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        CRServo angler = hardwareMap.crservo.get("Angle");
 
 
         frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
         frontRightMotor.setDirection(DcMotor.Direction.FORWARD);
         backLeftMotor.setDirection(DcMotor.Direction.REVERSE);
         backRightMotor.setDirection(DcMotor.Direction.FORWARD);
+        outtake.setDirection(DcMotorSimple.Direction.REVERSE);
 
+
+        transfer.setZeroPowerBehavior(BRAKE);
         frontLeftMotor.setZeroPowerBehavior(BRAKE);
         frontRightMotor.setZeroPowerBehavior(BRAKE);
         backLeftMotor.setZeroPowerBehavior(BRAKE);
         backRightMotor.setZeroPowerBehavior(BRAKE);
         intake.setZeroPowerBehavior(BRAKE);
         outtake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        transfer.setZeroPowerBehavior(BRAKE);
+        transfer.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
 
 
 
@@ -51,41 +56,66 @@ public class FieldCentricDrive extends LinearOpMode {
         IMU imu = hardwareMap.get(IMU.class, "imu");
         // Adjust the orientation parameters to match your robot
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
+                RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                RevHubOrientationOnRobot.UsbFacingDirection.UP));
         // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
         imu.initialize(parameters);
 
         waitForStart();
 
         if (isStopRequested()) return;
-
         while (opModeIsActive()) {
-            double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
+            double y = -gamepad1.left_stick_y;
             double x = gamepad1.left_stick_x;
             double rx = gamepad1.right_stick_x;
-            boolean aPressed = gamepad1.a;
-            boolean bPressed = gamepad1.b;
+            boolean Pressed = gamepad2.a;
+            boolean bPressed = gamepad2.b;
+            double currentAngle = 0;
+            double currentAngle2 = currentAngle;
+            double step = 10;
+            double degreesPerPower = 360.0;
+            double descent = -10;
 
 
 
-            if (aPressed) {
+            if (gamepad2.left_bumper) {
                 intake.setPower(1.0); // Full intake
+
             } else {
                 intake.setPower(0.0);
             }
-            if (gamepad1.right_bumper) {
-                outtake.setPower(0.25);
+            if (gamepad2.right_bumper) {
+                outtake.setVelocity(1250);
             } else {
-                outtake.setPower(0);
+                outtake.setVelocity(0);
             }
-            if (bPressed) {
-            transfer.setPower(1);
+
+            if (gamepad2.left_bumper) {
+                transfer.setVelocity(-100);
             }
+
+              else if (gamepad2.b){
+                  transfer.setVelocity(-1000);
+              }
               else {
-              transfer.setPower(0);
+                  transfer.setPower(0);
+              }
+
+            currentAngle += step;
+            double power = currentAngle / degreesPerPower;
+            degreesPerPower = 0.36;
+            currentAngle2 -= descent;
+            double power2 = currentAngle2/degreesPerPower;
+
+
+            if (gamepad2.dpad_up){
+                angler.setPower(power2);
+
             }
-            
+            if (gamepad2.dpad_down){
+                angler.setPower(power);
+            }
+
 
             // This button choice was made so that it is hard to hit on accident,
             // it can be freely changed based on preference.

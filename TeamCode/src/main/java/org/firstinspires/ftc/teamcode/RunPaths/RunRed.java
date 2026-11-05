@@ -25,6 +25,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
@@ -46,12 +47,10 @@ public class RunRed extends OpMode {
     private Follower follower;
     private final Red paths = new Red();
     private final DriveTrain2 driveTrain = new DriveTrain2();
-    private DcMotor frontLeftMotor = null;
-    private DcMotor backLeftMotor = null;
-    private DcMotor frontRightMotor = null;
-    private DcMotor backRightMotor = null;
+
     private DcMotorEx outtake = null;
     private DcMotor intake = null;
+    private DcMotor transfer = null;
     private double leftFrontPower;
     private double rightFrontPower;
     private double leftBackPower;
@@ -138,30 +137,24 @@ public class RunRed extends OpMode {
     public void initDrivetrain(HardwareMap hwMap){
 
         // Drive motors
-        frontLeftMotor = hardwareMap.get(DcMotor.class, "FrontLeftMotor");
-        frontRightMotor =hardwareMap.get(DcMotor.class, "FrontRightMotor");
-        backLeftMotor = hardwareMap.get(DcMotor.class, "BackLeftMotor");
-        backRightMotor = hardwareMap.get(DcMotor.class, "BackRightMotor");
+
 
         // Other motors
         intake = hardwareMap.get(DcMotor.class, "intake");
         outtake = hardwareMap.get(DcMotorEx.class, "launcher");
+        transfer = hardwareMap.get(DcMotorEx.class, "transfer");
 
 
 
 
         // Drive directions
-        frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
-        frontRightMotor.setDirection(DcMotor.Direction.FORWARD);
-        backLeftMotor.setDirection(DcMotor.Direction.REVERSE);
-        backRightMotor.setDirection(DcMotor.Direction.FORWARD);
+
+        transfer.setDirection(DcMotor.Direction.REVERSE);
 
         // Brake behavior
-        frontLeftMotor.setZeroPowerBehavior(BRAKE);
-        frontRightMotor.setZeroPowerBehavior(BRAKE);
-        backLeftMotor.setZeroPowerBehavior(BRAKE);
-        backRightMotor.setZeroPowerBehavior(BRAKE);
+
         intake.setZeroPowerBehavior(BRAKE);
+        transfer.setZeroPowerBehavior(BRAKE);
 
         // Launcher configuration
         outtake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
