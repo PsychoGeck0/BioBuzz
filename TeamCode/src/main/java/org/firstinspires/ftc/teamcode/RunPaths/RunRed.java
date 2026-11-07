@@ -160,7 +160,7 @@ public class RunRed extends OpMode {
         outtake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         outtake.setPIDFCoefficients(
                 DcMotor.RunMode.RUN_USING_ENCODER,
-                new PIDFCoefficients(40, 0, 0, 12.5)
+                new PIDFCoefficients(00.5, 0, 0, 12.5)
         );
 
 

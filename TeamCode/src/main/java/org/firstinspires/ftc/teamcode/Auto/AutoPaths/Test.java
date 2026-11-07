@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Auto.AutoPaths;
 
-import static com.pedropathing.api.Paths.*;
+import com.pedropathing.api.Paths;
 
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.follower.Follower;
@@ -23,18 +23,15 @@ public class Test extends LinearOpMode {
 
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
-    public final Pose start = poseFactory.of(57.7019, 8.9725, 90);
-    private final Pose path1Start = poseFactory.of(57.7019, 8.9725, -90);
-    private final Pose path1 = poseFactory.of(57.7019, 24.8162, -90);
-    private final Pose point2 = poseFactory.of(15.8144, 24.4021, 0.5664);
-    private final Pose point3 = poseFactory.of(108.8582, 24.1357, 179.836);
+    private final Pose start = poseFactory.of(59.0022, 7.8234, 90);
+    private final Pose path1 = poseFactory.of(59.7086, 23.1083, 90);
+    private final Pose point2 = poseFactory.of(59.7604, 8.9151, 90.209);
 
     // Autonomous routine
     public Command autoRoutine() {
         return sequential(
                 follow(follower, path1()),
-                follow(follower, path2()),
-                follow(follower, path3())
+                follow(follower, path2())
         );
     }
 
@@ -66,14 +63,10 @@ public class Test extends LinearOpMode {
     }
 
     public Path path1() {
-        return line(path1Start, path1).linear(path1Start, path1);
+        return Paths.line(start, path1).linear(start, path1);
     }
 
     public Path path2() {
-        return line(path1, point2).reverseTangent();
-    }
-
-    public Path path3() {
-        return line(point2, point3).reverseTangent();
+        return Paths.line(path1, point2).reverseTangent();
     }
 }

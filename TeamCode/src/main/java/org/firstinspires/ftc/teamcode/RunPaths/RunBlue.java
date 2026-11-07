@@ -149,6 +149,7 @@ public class RunBlue extends OpMode {
 
         transfer.setDirection(DcMotor.Direction.REVERSE);
 
+
         // Brake behavior
 
         intake.setZeroPowerBehavior(BRAKE);
@@ -158,7 +159,7 @@ public class RunBlue extends OpMode {
         outtake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         outtake.setPIDFCoefficients(
                 DcMotor.RunMode.RUN_USING_ENCODER,
-                new PIDFCoefficients(40, 0, 0, 12.5)
+                new PIDFCoefficients(0.05, 0, 0, 12.5)
         );
 
 

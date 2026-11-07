@@ -85,7 +85,7 @@ public class FieldCentricDrive extends LinearOpMode {
                 intake.setPower(0.0);
             }
             if (gamepad2.right_bumper) {
-                outtake.setVelocity(1250);
+                outtake.setVelocity(1200);
             } else {
                 outtake.setVelocity(0);
             }
@@ -94,11 +94,17 @@ public class FieldCentricDrive extends LinearOpMode {
                 transfer.setVelocity(-100);
             }
 
-              else if (gamepad2.b){
+              else if (gamepad2.y){
                   transfer.setVelocity(-1000);
               }
               else {
                   transfer.setPower(0);
+              }
+              if (gamepad2.x){
+                  outtake.setVelocity(500);
+              }
+              else {
+                  transfer.setVelocity(0);
               }
 
             currentAngle += step;
