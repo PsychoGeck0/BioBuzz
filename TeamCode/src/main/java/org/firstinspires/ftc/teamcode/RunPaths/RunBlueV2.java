@@ -73,10 +73,10 @@ public class RunBlueV2 extends OpMode {
     // Same wait pattern as Redbb. Add, remove or change Wait(...) lines as needed.
     private Command autoRoutine() {
         return sequential(
-                instant(()-> outtake.setVelocity(1250)),
-                Wait(2000),
+                instant(()-> outtake.setVelocity(-1800)),
+                Wait(3500),
                 instant(()-> transfer.setPower(1)),
-                Wait(800),
+                Wait(2000),
                 instant(()-> outtake.setVelocity(0)),
                 instant(()-> transfer.setPower(0)),
 
@@ -92,7 +92,7 @@ public class RunBlueV2 extends OpMode {
 
 
                 follow(follower, paths.path3()),
-                instant(()-> outtake.setVelocity(1250)),
+                instant(()-> outtake.setVelocity(-2250)),
                 Wait(2000),
                 instant(()-> transfer.setPower(1)),
                 //add lower flower
@@ -105,7 +105,7 @@ public class RunBlueV2 extends OpMode {
                 instant(() -> intake.setPower(1)),
                 Wait(800),
                 instant(() -> intake.setPower(0)),
-                instant(()-> outtake.setVelocity(1250)),
+                instant(()-> outtake.setVelocity(-1250)),
                 Wait(2000),
 
                 follow(follower, paths.path5()),

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServoImplEx;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -30,6 +31,7 @@ public class FieldCentricDrive extends LinearOpMode {
         outtake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         transfer.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         CRServo angler = hardwareMap.crservo.get("Angle");
+        CRServoImplEx flower = (CRServoImplEx) hardwareMap.crservo.get("flower");
 
 
         frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
@@ -75,6 +77,12 @@ public class FieldCentricDrive extends LinearOpMode {
             double step = 10;
             double degreesPerPower = 360.0;
             double descent = -10;
+            double currentFlowerAngle = 0;
+            double currentFlowerAngle2 = currentAngle;
+            double flowerStep = 30;
+            double flowerDegreesPerPower = 360.0;
+            double flowerDescent = -30;
+
 
 
 
@@ -85,33 +93,41 @@ public class FieldCentricDrive extends LinearOpMode {
                 intake.setPower(0.0);
             }
             if (gamepad2.right_bumper) {
-                outtake.setVelocity(1200);
-            } else {
+                outtake.setVelocity(4000);
+            }
+            else if (gamepad2.b){
+                outtake.setVelocity(1800);
+            }
+            else {
                 outtake.setVelocity(0);
             }
 
             if (gamepad2.left_bumper) {
-                transfer.setVelocity(-100);
+                transfer.setVelocity(-400);
             }
 
               else if (gamepad2.y){
+
+
                   transfer.setVelocity(-1000);
-              }
-              else {
-                  transfer.setPower(0);
-              }
-              if (gamepad2.x){
-                  outtake.setVelocity(500);
               }
               else {
                   transfer.setVelocity(0);
               }
+
+
 
             currentAngle += step;
             double power = currentAngle / degreesPerPower;
             degreesPerPower = 0.36;
             currentAngle2 -= descent;
             double power2 = currentAngle2/degreesPerPower;
+
+            currentFlowerAngle += flowerStep;
+            double powerF = currentFlowerAngle/flowerDegreesPerPower;
+            flowerDegreesPerPower = 0.36;
+            currentFlowerAngle2 = flowerDescent;
+            double power2F = currentFlowerAngle2/flowerDegreesPerPower;
 
 
             if (gamepad2.dpad_up){
@@ -121,6 +137,12 @@ public class FieldCentricDrive extends LinearOpMode {
             if (gamepad2.dpad_down){
                 angler.setPower(power);
             }
+if (gamepad1.dpad_down){
+    flower.setPower(powerF);
+}
+if (gamepad1.dpad_up){
+    flower.setPower(power2F);
+}
 
 
             // This button choice was made so that it is hard to hit on accident,
