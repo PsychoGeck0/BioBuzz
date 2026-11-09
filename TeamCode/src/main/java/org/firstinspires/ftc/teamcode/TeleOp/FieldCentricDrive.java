@@ -93,10 +93,10 @@ public class FieldCentricDrive extends LinearOpMode {
                 intake.setPower(0.0);
             }
             if (gamepad2.right_bumper) {
-                outtake.setVelocity(4000);
+                outtake.setVelocity(1070); //Nectar
             }
             else if (gamepad2.b){
-                outtake.setVelocity(1800);
+                outtake.setVelocity(730); //Pollen
             }
             else {
                 outtake.setVelocity(0);
@@ -117,6 +117,7 @@ public class FieldCentricDrive extends LinearOpMode {
 
 
 
+
             currentAngle += step;
             double power = currentAngle / degreesPerPower;
             degreesPerPower = 0.36;
@@ -131,11 +132,11 @@ public class FieldCentricDrive extends LinearOpMode {
 
 
             if (gamepad2.dpad_up){
-                angler.setPower(power2);
+                angler.setPower(1);
 
             }
             if (gamepad2.dpad_down){
-                angler.setPower(power);
+                angler.setPower(-1);
             }
 if (gamepad1.dpad_down){
     flower.setPower(powerF);

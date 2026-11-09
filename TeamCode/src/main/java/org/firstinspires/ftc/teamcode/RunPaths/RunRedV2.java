@@ -56,6 +56,8 @@ public class RunRedV2 extends OpMode {
     private double leftBackPower;
     private double rightBackPower;
     private double intakePower;
+    private  CRServo angler;
+
 
 
     // ---- Actions ----
@@ -73,12 +75,11 @@ public class RunRedV2 extends OpMode {
     // Same wait pattern as Redbb. Add, remove or change Wait(...) lines as needed.
     private Command autoRoutine() {
         return sequential(
-                instant(()-> outtake.setVelocity(1250)),
-                Wait(2000),
-                instant(()-> transfer.setPower(1)),
-                Wait(800),
-                instant(()-> outtake.setVelocity(0)),
-                instant(()-> transfer.setPower(0)),
+                instant(()-> angler.setPower(1)),
+                instant(()-> outtake.setVelocity(-782)),
+                Wait(3500),
+                instant(()-> transfer.setPower(0.8)),
+                Wait(3001),
 
                 follow(follower, paths.path1()),
                 instant(()-> intake.setPower(1)),
@@ -92,11 +93,11 @@ public class RunRedV2 extends OpMode {
 
 
                 follow(follower, paths.path3()),
-                instant(()-> outtake.setVelocity(1250)),
+                instant(()-> outtake.setVelocity(-730)),
                 Wait(2000),
                 instant(()-> transfer.setPower(1)),
                 //add lower flower
-                Wait(800),
+                Wait(1500),
 //add lower hood
                 instant(()-> outtake.setVelocity(0)),
                 instant(()-> transfer.setPower(0)),
@@ -105,17 +106,17 @@ public class RunRedV2 extends OpMode {
                 instant(() -> intake.setPower(1)),
                 Wait(800),
                 instant(() -> intake.setPower(0)),
-                instant(()-> outtake.setVelocity(1250)),
+                instant(()-> outtake.setVelocity(-700)),
                 Wait(2000),
 
                 follow(follower, paths.path5()),
                 instant(()-> transfer.setPower(1)),
-                Wait(800),
+                Wait(1200),
 
 
-                follow(follower, paths.path6())
+                follow(follower, paths.path6()),
                 //add transfer when built
-
+                follow(follower, paths.path6())
         );
     }
 
@@ -155,6 +156,7 @@ public class RunRedV2 extends OpMode {
         intake = hardwareMap.get(DcMotor.class, "intake");
         outtake = hardwareMap.get(DcMotorEx.class, "launcher");
         transfer = hardwareMap.get(DcMotorEx.class, "transfer");
+        angler = hardwareMap.get(CRServo.class, "Angle");
 
 
 
@@ -170,11 +172,6 @@ public class RunRedV2 extends OpMode {
         transfer.setZeroPowerBehavior(BRAKE);
 
         // Launcher configuration
-        outtake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        outtake.setPIDFCoefficients(
-                DcMotor.RunMode.RUN_USING_ENCODER,
-                new PIDFCoefficients(0.05, 0, 0, 12.5)
-        );
 
 
 
