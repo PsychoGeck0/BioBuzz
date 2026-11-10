@@ -75,10 +75,10 @@ public class RunBlueV2 extends OpMode {
     private Command autoRoutine() {
         return sequential(
                 instant(()-> angler.setPower(1)),
-                instant(()-> outtake.setVelocity(-782)),
-                Wait(3500),
+                instant(()-> outtake.setVelocity(-720)),
+                Wait(4800),
                 instant(()-> transfer.setPower(0.8)),
-                Wait(3001),
+                Wait(6000),
                 follow(follower, paths.path1()),
 
 

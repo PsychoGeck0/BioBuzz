@@ -92,11 +92,13 @@ public class FieldCentricDrive extends LinearOpMode {
             } else {
                 intake.setPower(0.0);
             }
-            if (gamepad2.right_bumper) {
+            if (gamepad2.right_bumper)
+            {
                 outtake.setVelocity(1070); //Nectar
             }
-            else if (gamepad2.b){
-                outtake.setVelocity(730); //Pollen
+            else if (gamepad2.b)
+            {
+                outtake.setVelocity(720); //Pollen
             }
             else {
                 outtake.setVelocity(0);
