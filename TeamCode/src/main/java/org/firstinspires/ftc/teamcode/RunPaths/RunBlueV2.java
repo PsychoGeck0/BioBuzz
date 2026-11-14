@@ -13,20 +13,15 @@ import com.pedropathing.ivy.Scheduler;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.Auto.AutoPaths.Red;
 import org.firstinspires.ftc.teamcode.Mechanisms.DriveTrain2;
 
 import  org.firstinspires.ftc.teamcode.Auto.AutoPaths.BlueV2;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
-
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
@@ -50,7 +45,7 @@ public class RunBlueV2 extends OpMode {
     private final DriveTrain2 driveTrain = new DriveTrain2();
 
     private DcMotorEx outtake = null;
-    private DcMotor intake = null;
+    private DcMotorEx intake = null;
     private DcMotor transfer = null;
     private double leftFrontPower;
     private double rightFrontPower;
@@ -75,11 +70,28 @@ public class RunBlueV2 extends OpMode {
     private Command autoRoutine() {
         return sequential(
                 instant(()-> angler.setPower(1)),
-                instant(()-> outtake.setVelocity(-720)),
+                instant(()-> outtake.setVelocity(-778)),
                 Wait(4800),
                 instant(()-> transfer.setPower(0.8)),
-                Wait(6000),
+                Wait(2000),
+                instant(()-> intake.setVelocity(1150)),
+                Wait(3000),
+                instant(()-> transfer.setPower(0)),
+                Wait(1000),
+                instant(()-> transfer.setPower(0.8)),
+              Wait(1000),
+                instant(()-> intake.setVelocity(1150)),
+                Wait(3000),
+                instant(()-> transfer.setPower(0)),
+                instant(()-> intake.setVelocity(1150)),
+                Wait(1000),
+                instant(()-> transfer.setPower(0)),
+                Wait(1000),
+                instant(()-> transfer.setPower(0.8)),
+                Wait(1000),
+                instant(()-> transfer.setPower(0)),
                 follow(follower, paths.path1()),
+
 
 
 
@@ -152,10 +164,11 @@ public class RunBlueV2 extends OpMode {
 
 
         // Other motors
-        intake = hardwareMap.get(DcMotor.class, "intake");
+        intake = hardwareMap.get(DcMotorEx.class, "intake");
         outtake = hardwareMap.get(DcMotorEx.class, "launcher");
         transfer = hardwareMap.get(DcMotorEx.class, "transfer");
-angler = hardwareMap.get(CRServo.class, "Angle");
+        angler = hardwareMap.get(CRServo.class, "Angle");
+
 
 
 
@@ -170,6 +183,9 @@ angler = hardwareMap.get(CRServo.class, "Angle");
         transfer.setZeroPowerBehavior(BRAKE);
 
 
+        outtake.setPIDFCoefficients(
+                DcMotor.RunMode.RUN_USING_ENCODER,
+                new PIDFCoefficients(299,0,0,0));
 
 
 
