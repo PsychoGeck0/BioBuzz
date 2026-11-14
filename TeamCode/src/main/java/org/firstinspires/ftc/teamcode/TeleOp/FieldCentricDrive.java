@@ -14,6 +14,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
+import java.util.PriorityQueue;
+
 @TeleOp
 public class FieldCentricDrive extends LinearOpMode {
 
@@ -91,14 +93,15 @@ public class FieldCentricDrive extends LinearOpMode {
 
             } else {
                 intake.setPower(0.0);
+
             }
             if (gamepad2.right_bumper)
             {
-                outtake.setVelocity(1070); //Nectar
+                outtake.setVelocity(1660); //Nectar
             }
             else if (gamepad2.b)
             {
-                outtake.setVelocity(720); //Pollen
+                outtake.setVelocity(764); //Pollen
             }
             else {
                 outtake.setVelocity(0);
@@ -141,10 +144,10 @@ public class FieldCentricDrive extends LinearOpMode {
                 angler.setPower(-1);
             }
 if (gamepad1.dpad_down){
-    flower.setPower(powerF);
+    flower.setPower(1);
 }
 if (gamepad1.dpad_up){
-    flower.setPower(power2F);
+    flower.setPower(-1);
 }
 
 
@@ -176,6 +179,10 @@ if (gamepad1.dpad_up){
             backLeftMotor.setPower(backLeftPower);
             frontRightMotor.setPower(frontRightPower);
             backRightMotor.setPower(backRightPower);
+            outtake.setPIDFCoefficients(
+                    DcMotor.RunMode.RUN_USING_ENCODER,
+                    new PIDFCoefficients(299,0,0,0));
+
         }
     }
 }

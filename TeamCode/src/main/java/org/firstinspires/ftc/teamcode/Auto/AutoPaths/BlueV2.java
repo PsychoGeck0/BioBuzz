@@ -23,14 +23,15 @@ public class BlueV2 extends LinearOpMode {
 
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
-    public final Pose start = poseFactory.of(56, 8, 90);
-    private final Pose path1 = poseFactory.of(29.5101, 11.9825, 90);
-    private final Pose point2Start = poseFactory.of(29.5101, 11.9825, 90);
-    private final Pose point2 = poseFactory.of(30.1063, 46.113, 90);
-    private final Pose point3Start = poseFactory.of(30.1063, 46.113, 180);
+    public final Pose start = poseFactory.of(57.766, 8.3532, 90);
+    private final Pose path1 = poseFactory.of(30.7463, 13.7485, 90);
+    private final Pose point2Start = poseFactory.of(30.7463, 13.7485, 90);
+    private final Pose point2 = poseFactory.of(29.9297, 46.8194, 90);
+    private final Pose point3Start = poseFactory.of(29.9297, 46.8194, 180);
     private final Pose point3 = poseFactory.of(9.9731, 46.8389, 180);
     private final Pose point4Start = poseFactory.of(9.9731, 46.8389, 180);
     private final Pose point4 = poseFactory.of(59.1474, 117.7214, 270);
+    private final Pose point4Control1 = poseFactory.of(9.6976, 109.5261, 0);
     private final Pose point5Start = poseFactory.of(59.1474, 117.7214, 90);
     private final Pose point5 = poseFactory.of(46.7818, 132.2366, 90);
     private final Pose point6Start = poseFactory.of(46.7818, 132.2366, 90);
@@ -92,7 +93,7 @@ public class BlueV2 extends LinearOpMode {
     }
 
     public Path path4() {
-        return Paths.line(point4Start, point4).linear(point4Start, point4);
+        return Paths.curve(point4Start, point4Control1, point4).linear(point4Start, point4);
     }
 
     public Path path5() {
