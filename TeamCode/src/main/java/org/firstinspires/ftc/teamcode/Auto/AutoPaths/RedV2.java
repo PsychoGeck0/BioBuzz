@@ -16,28 +16,23 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
-@Autonomous(name = "RedV2", group = "Autonomous")
+@Autonomous(name = "AutoPathRed", group = "Autonomous")
 public class RedV2 extends LinearOpMode {
 
     private Follower follower;
 
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
-    public final Pose start = poseFactory.of(58.8256, 9.0596, 90);
-    private final Pose path1 = poseFactory.of(22.976, 14.9847, 90);
-    private final Pose point2 = poseFactory.of(24.6519, 46.017, 93.0913);
-    private final Pose point3Start = poseFactory.of(24.6519, 46.017, 90);
-    private final Pose point3 = poseFactory.of(12.4453, 46.2791, 180);
-    private final Pose point4Start = poseFactory.of(12.4453, 46.2791, 180);
-    private final Pose point4 = poseFactory.of(59.7176, 119.0717, 270);
-    private final Pose point4Control1 = poseFactory.of(27.0318, 115.3935, 0);
-    private final Pose point5Start = poseFactory.of(59.7176, 119.0717, 180);
-    private final Pose point5 = poseFactory.of(46.31, 129.9694, 90);
-    private final Pose point6Start = poseFactory.of(46.31, 129.9694, 90);
-    private final Pose point6 = poseFactory.of(58.659, 120.057, 270);
-    private final Pose point6Control1 = poseFactory.of(27.2704, 111.4353, 0);
-    private final Pose point7 = poseFactory.of(7.9128, 107.1806, -0.321);
-    private final Pose point7Control1 = poseFactory.of(22.0547, 107.1013, 0);
+    public final Pose start = poseFactory.of(60.4928, 8.3958, 90);
+    private final Pose path1 = poseFactory.of(46.2685, 130.2475, 90);
+    private final Pose path1Control1 = poseFactory.of(70.7888, 89.9333, 0);
+    private final Pose point2Start = poseFactory.of(46.2685, 130.2475, 90);
+    private final Pose point2 = poseFactory.of(35.7953, 123.4598, -60);
+    private final Pose point3Start = poseFactory.of(35.7953, 123.4598, -60);
+    private final Pose point3 = poseFactory.of(11.3955, 46.8387, 180);
+    private final Pose point4Start = poseFactory.of(11.3955, 46.8387, 180);
+    private final Pose point4 = poseFactory.of(58.4371, 120.3487, -90);
+    private final Pose point5 = poseFactory.of(9.8673, 108.4136, 0);
 
     // Autonomous routine
     public Command autoRoutine() {
@@ -46,9 +41,7 @@ public class RedV2 extends LinearOpMode {
                 follow(follower, path2()),
                 follow(follower, path3()),
                 follow(follower, path4()),
-                follow(follower, path5()),
-                follow(follower, path6()),
-                follow(follower, path7())
+                follow(follower, path5())
         );
     }
 
@@ -80,11 +73,11 @@ public class RedV2 extends LinearOpMode {
     }
 
     public Path path1() {
-        return Paths.line(start, path1).linear(start, path1);
+        return Paths.curve(start, path1Control1, path1).linear(start, path1);
     }
 
     public Path path2() {
-        return Paths.line(path1, point2).reverseTangent();
+        return Paths.line(point2Start, point2).linear(point2Start, point2);
     }
 
     public Path path3() {
@@ -92,18 +85,10 @@ public class RedV2 extends LinearOpMode {
     }
 
     public Path path4() {
-        return Paths.curve(point4Start, point4Control1, point4).linear(point4Start, point4);
+        return Paths.line(point4Start, point4).linear(point4Start, point4);
     }
 
     public Path path5() {
-        return Paths.line(point5Start, point5).linear(point5Start, point5);
-    }
-
-    public Path path6() {
-        return Paths.curve(point6Start, point6Control1, point6).linear(point6Start, point6);
-    }
-
-    public Path path7() {
-        return Paths.curve(point6, point7Control1, point7).reverseTangent();
+        return Paths.line(point4, point5).constant(point5);
     }
 }

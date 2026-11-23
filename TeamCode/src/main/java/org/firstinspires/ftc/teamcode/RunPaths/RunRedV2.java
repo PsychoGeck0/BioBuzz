@@ -6,21 +6,26 @@ import static com.pedropathing.ivy.commands.Commands.instant;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
+import static com.pedropathing.ivy.pedro.PedroCommands.*;
+import static com.pedropathing.ivy.commands.Commands.*;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-
 import org.firstinspires.ftc.teamcode.Mechanisms.DriveTrain2;
 
 import  org.firstinspires.ftc.teamcode.Auto.AutoPaths.RedV2;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
+
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
@@ -34,7 +39,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 // =========================
 
 
-@Autonomous(name = "RunRedV2", group = "Autonomous1")
+@Autonomous(name = "RedV2", group = "Autonomous2")
 
 public class RunRedV2 extends OpMode {
     public final int LAUNCHER_TARGET_VELOCITY = 1250;
@@ -51,8 +56,6 @@ public class RunRedV2 extends OpMode {
     private double leftBackPower;
     private double rightBackPower;
     private double intakePower;
-    private  CRServo angler;
-
 
 
     // ---- Actions ----
@@ -70,48 +73,11 @@ public class RunRedV2 extends OpMode {
     // Same wait pattern as Redbb. Add, remove or change Wait(...) lines as needed.
     private Command autoRoutine() {
         return sequential(
-                instant(()-> angler.setPower(1)),
-                instant(()-> outtake.setVelocity(-782)),
-                Wait(3500),
-                instant(()-> transfer.setPower(0.8)),
-                Wait(3001),
-
-                follow(follower, paths.path1()),
-                instant(()-> intake.setPower(1)),
-
-
-
-
+               follow(follower, paths.path1()),
                 follow(follower, paths.path2()),
-                Wait(800),
-                instant(()-> intake.setPower(0)),
-
-
                 follow(follower, paths.path3()),
-                instant(()-> outtake.setVelocity(-730)),
-                Wait(2000),
-                instant(()-> transfer.setPower(1)),
-                //add lower flower
-                Wait(1500),
-//add lower hood
-                instant(()-> outtake.setVelocity(0)),
-                instant(()-> transfer.setPower(0)),
-
                 follow(follower, paths.path4()),
-                instant(() -> intake.setPower(1)),
-                Wait(800),
-                instant(() -> intake.setPower(0)),
-                instant(()-> outtake.setVelocity(-700)),
-                Wait(2000),
-
-                follow(follower, paths.path5()),
-                instant(()-> transfer.setPower(1)),
-                Wait(1200),
-
-
-                follow(follower, paths.path6()),
-                //add transfer when built
-                follow(follower, paths.path6())
+                follow(follower, paths.path5())
         );
     }
 
@@ -121,7 +87,7 @@ public class RunRedV2 extends OpMode {
         follower = Constants.create(hardwareMap);
         follower.setPose(paths.start);
         follower.update();
-        telemetry.addLine("Blue ready");
+        telemetry.addLine("RedV2 Ready");
         telemetry.update();
         initDrivetrain(hardwareMap);
     }
@@ -151,7 +117,6 @@ public class RunRedV2 extends OpMode {
         intake = hardwareMap.get(DcMotor.class, "intake");
         outtake = hardwareMap.get(DcMotorEx.class, "launcher");
         transfer = hardwareMap.get(DcMotorEx.class, "transfer");
-        angler = hardwareMap.get(CRServo.class, "Angle");
 
 
 
@@ -160,18 +125,20 @@ public class RunRedV2 extends OpMode {
 
         transfer.setDirection(DcMotor.Direction.REVERSE);
 
-
         // Brake behavior
 
         intake.setZeroPowerBehavior(BRAKE);
         transfer.setZeroPowerBehavior(BRAKE);
 
         // Launcher configuration
-
-
+        outtake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         outtake.setPIDFCoefficients(
                 DcMotor.RunMode.RUN_USING_ENCODER,
-                new PIDFCoefficients(2,0,0,25));
+                new PIDFCoefficients(40, 0, 0, 12.5)
+        );
+
+
+
 
 
 
