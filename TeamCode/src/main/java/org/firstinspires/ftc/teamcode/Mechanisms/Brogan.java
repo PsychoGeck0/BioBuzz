@@ -64,7 +64,8 @@ public class Brogan extends OpMode {
     // AprilTag IDs the robot is allowed to aim at.
     // Empty array {} = use whatever the Limelight picks as the primary target.
     // Example: {20, 24} aims at either tag 20 or tag 24 and ignores all others.
-    // If more than one allowed tag is visible, the one closest to center is used.
+    // If two or more allowed tags are visible, the two closest to center are averaged
+    // (aim at the midpoint). With one visible tag, it aims at that tag.
     int[] TARGET_TAG_IDS = {};
 
     // Max age (ms) of a Limelight result before we ignore it
@@ -209,8 +210,9 @@ public class Brogan extends OpMode {
 
     /**
      * Returns {tx, ty} for the target, or null if there is no fresh, valid one.
-     * If TARGET_TAG_IDS is not empty, only those AprilTags are considered, and the one
-     * closest to the crosshair (smallest horizontal error) is chosen.
+     * If TARGET_TAG_IDS is not empty, only those AprilTags are considered. The two closest
+     * to the crosshair are used and the result is the midpoint of their tx/ty. If only one
+     * allowed tag is visible, that tag alone is used.
      */
     private double[] getTarget() {
         LLResult result = limelight.getLatestResult();
@@ -222,16 +224,26 @@ public class Brogan extends OpMode {
             return new double[]{result.getTx(), result.getTy()};
         }
 
-        double[] best = null;
+        // Keep the two allowed tags closest to the crosshair
+        double[] first = null;    // closest
+        double[] second = null;   // second closest
         for (LLResultTypes.FiducialResult tag : result.getFiducialResults()) {
             if (!isAllowedTag(tag.getFiducialId())) continue;
 
-            double tx = tag.getTargetXDegrees();
-            if (best == null || Math.abs(tx - goalX) < Math.abs(best[0] - goalX)) {
-                best = new double[]{tx, tag.getTargetYDegrees()};
+            double[] cand = {tag.getTargetXDegrees(), tag.getTargetYDegrees()};
+            if (first == null || Math.abs(cand[0] - goalX) < Math.abs(first[0] - goalX)) {
+                second = first;
+                first = cand;
+            } else if (second == null || Math.abs(cand[0] - goalX) < Math.abs(second[0] - goalX)) {
+                second = cand;
             }
         }
-        return best;
+
+        if (first == null) return null;
+        if (second == null) return first;   // only one tag visible: aim at it
+
+        // Two tags visible: aim at the midpoint between them
+        return new double[]{(first[0] + second[0]) / 2.0, (first[1] + second[1]) / 2.0};
     }
 
     private boolean isAllowedTag(int id) {
