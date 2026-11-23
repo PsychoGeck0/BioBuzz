@@ -61,9 +61,11 @@ public class Brogan extends OpMode {
     // anglerGain: change in servo position per degree of ty (can be negative).
     double anglerGain = 0;
 
-    // -1 = use whatever Limelight picks as the primary target.
-    // Set to a specific AprilTag ID to ignore all other tags.
-    int TARGET_TAG_ID = -1;
+    // AprilTag IDs the robot is allowed to aim at.
+    // Empty array {} = use whatever the Limelight picks as the primary target.
+    // Example: {20, 24} aims at either tag 20 or tag 24 and ignores all others.
+    // If more than one allowed tag is visible, the one closest to center is used.
+    int[] TARGET_TAG_IDS = {};
 
     // Max age (ms) of a Limelight result before we ignore it
     static final long MAX_STALENESS_MS = 100;
@@ -207,7 +209,8 @@ public class Brogan extends OpMode {
 
     /**
      * Returns {tx, ty} for the target, or null if there is no fresh, valid one.
-     * If TARGET_TAG_ID >= 0, only that AprilTag is used.
+     * If TARGET_TAG_IDS is not empty, only those AprilTags are considered, and the one
+     * closest to the crosshair (smallest horizontal error) is chosen.
      */
     private double[] getTarget() {
         LLResult result = limelight.getLatestResult();
@@ -215,15 +218,26 @@ public class Brogan extends OpMode {
             return null;
         }
 
-        if (TARGET_TAG_ID < 0) {
+        if (TARGET_TAG_IDS.length == 0) {
             return new double[]{result.getTx(), result.getTy()};
         }
 
+        double[] best = null;
         for (LLResultTypes.FiducialResult tag : result.getFiducialResults()) {
-            if (tag.getFiducialId() == TARGET_TAG_ID) {
-                return new double[]{tag.getTargetXDegrees(), tag.getTargetYDegrees()};
+            if (!isAllowedTag(tag.getFiducialId())) continue;
+
+            double tx = tag.getTargetXDegrees();
+            if (best == null || Math.abs(tx - goalX) < Math.abs(best[0] - goalX)) {
+                best = new double[]{tx, tag.getTargetYDegrees()};
             }
         }
-        return null;
+        return best;
+    }
+
+    private boolean isAllowedTag(int id) {
+        for (int allowed : TARGET_TAG_IDS) {
+            if (allowed == id) return true;
+        }
+        return false;
     }
 }
